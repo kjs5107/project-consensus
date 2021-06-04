@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SteamService } from '../shared/services/steam.service';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +8,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  public steamID: string = '';
+  public steamFriends = [];
+  public steamGames = [];
 
-  ngOnInit(): void {
+  constructor(private steamService: SteamService) { }
+
+  ngOnInit(): void {}
+
+  async getSteamFriends() {
+    this.steamFriends = await this.steamService.getSteamFriends(this.steamID);
+
+    console.log(this.steamFriends);
+  }
+
+  async getSteamGames() {
+    this.steamGames = await this.steamService.getSteamOwnedGames(this.steamID);
+
+    console.log(this.steamGames);
   }
 
 }

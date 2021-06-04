@@ -1,1 +1,11 @@
-<p>Project Consensus Homepage!</p>
+<div class="container">
+  <div class="row">
+    <p class="col-12">Project Consensus Homepage!</p>
+
+    <form (ngSubmit)="getSteamFriends(); getSteamGames()">
+      <label>Please input your Steam ID:</label>
+      <input type="text" name="steamID" [(ngModel)]="steamID" />
+      <button class="button" type="submit">Enter</button>
+    </form>
+  </div>
+</div>
