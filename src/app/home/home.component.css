@@ -1,0 +1,7 @@
+label {
+  margin-right: .5rem;
+}
+
+.friends-columns {
+  column-count: 3;
+}

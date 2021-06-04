@@ -1,11 +1,41 @@
 <div class="container">
   <div class="row">
-    <p class="col-12">Project Consensus Homepage!</p>
+    <h1 class="col-12">Project Consensus Homepage</h1>
 
-    <form (ngSubmit)="getSteamFriends(); getSteamGames()">
-      <label>Please input your Steam ID:</label>
-      <input type="text" name="steamID" [(ngModel)]="steamID" />
+    <form (ngSubmit)="getSteamFriends()">
+      <label for="steamID">Please input your Steam ID:</label>
+      <input type="text" name="steamID" id="steamID"[(ngModel)]="steamID" />
       <button class="button" type="submit">Enter</button>
     </form>
+  </div>
+
+  <br>
+  <div class="row">
+    <h2>Steam Friends: </h2>
+    <div *ngIf="steamFriends.length > 0" class="friends-columns">
+      <div *ngFor="let friend of sortBy(steamFriends, 'personaname')" class="form-check">
+        <input [(ngModel)]="friend.selected" (ngModelChange)="addRemoveFromSteamComparison($event, friend.steamid)"
+                class="form-check-input" type="checkbox" id="{{friend.steamid}}">
+        <label class="form-check-label" for="{{friend.steamid}}">
+          {{friend.realname != null ? friend.personaname + ' (' + friend.realname + ')': friend.personaname}}
+        </label>
+      </div>
+    </div>
+    <div *ngIf="steamFriends.length == 0">
+      <span>Oof you have no friends...</span>
+    </div>
+  </div>
+
+  <br>
+  <div class="row">
+    <h2>Games in Common: </h2>
+    <div *ngIf="mutualSteamGames.length > 0" class="friends-columns">
+      <div *ngFor="let game of sortBy(mutualSteamGames, 'name')" class="form-check">
+        <span>{{game.name}}</span>
+      </div>
+    </div>
+    <div *ngIf="mutualSteamGames.length == 0">
+      <span>Oof you have no games in common...go buy some</span>
+    </div>
   </div>
 </div>

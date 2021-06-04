@@ -9,13 +9,13 @@ export class SteamService {
 
   constructor() { }
 
-  public async getSteamFriends(steamID: string) {
+  public async getSteamFriends(steamID: string): Promise<any> {
     return fetch(`${this.steamFriendsUrl}?steamID=${steamID}`)
       .then(resp => resp.json())
       .catch(err => console.error(err));
   }
 
-  public async getSteamOwnedGames(steamID: string) {
+  public async getSteamOwnedGames(steamID: string): Promise<any> {
     return fetch(`${this.steamOwnedGamesUrl}?steamID=${steamID}`)
       .then(resp => resp.json())
       .catch(err => console.error(err));
