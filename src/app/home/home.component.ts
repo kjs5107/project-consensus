@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { SteamService } from '../shared/services/steam.service';
 import { ISteamFriends } from '../shared/types/steam-friends-interface';
 import { ISteamOwnedGames } from '../shared/types/steam-games-interface';
@@ -17,7 +18,7 @@ export class HomeComponent implements OnInit {
   public mutualSteamGameIDs: string[][] = []; // 2D array for manipulation of gameid intersections
   public friendsSteamIDsToCompare: string[] = [];
 
-  constructor(private steamService: SteamService) { }
+  constructor(private steamService: SteamService, private sanitizer: DomSanitizer) { }
 
   ngOnInit(): void { }
 
@@ -30,6 +31,10 @@ export class HomeComponent implements OnInit {
 
   public sortBy(arr: any[], prop: string) {
     return arr.sort((a, b) => a[prop] > b[prop] ? 1 : a[prop] === b[prop] ? 0 : -1);
+  }
+
+  public getSteamLaunchGameUrl(appID: string) {
+    return this.sanitizer.bypassSecurityTrustUrl('steam://rungameid/' + appID);
   }
 
   public async getSteamFriends() {

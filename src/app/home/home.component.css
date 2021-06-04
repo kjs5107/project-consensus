@@ -5,3 +5,17 @@ label {
 .friends-columns {
   column-count: 3;
 }
+
+.games-coulmn-padding {
+  padding-left: 0;
+}
+
+.steam-id-form {
+  height: 40px;
+  line-height: 40px;
+}
+
+.steam-id-form-btn {
+  margin-left: 1rem;
+  margin-bottom: .3rem;
+}
