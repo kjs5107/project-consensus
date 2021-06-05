@@ -1,5 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
-@import '~bootstrap/dist/css/bootstrap.min.css';
 
 body {
   color: #c9d1d9;
@@ -11,3 +10,6 @@ body a {
 
 /* Possible Header bg color: #161b22 */
 
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
