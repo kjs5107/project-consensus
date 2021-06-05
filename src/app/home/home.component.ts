@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { forkJoin, Observable } from 'rxjs';
 import { SteamService } from '../shared/services/steam.service';
 import { ISteamFriends } from '../shared/types/steam-friends-interface';
 import { ISteamOwnedGames } from '../shared/types/steam-games-interface';
@@ -9,7 +10,7 @@ import { ISteamOwnedGames } from '../shared/types/steam-games-interface';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
 
   public steamID: string = '';
   public steamFriends: ISteamFriends[] = [];
@@ -20,12 +21,10 @@ export class HomeComponent implements OnInit {
 
   constructor(private steamService: SteamService, private sanitizer: DomSanitizer) { }
 
-  ngOnInit(): void { }
-
   private getSteamGamesInCommon() {
     let intersection = this.mutualSteamGameIDs.reduce((a, b) => a.filter(c => b.includes(c)));
     this.mutualSteamGames = this.steamGames.filter(game => intersection.includes(game.appid)) // Grab only the ids we care about
-                              .filter((val,index,arr) => arr.findIndex(t => (t.appid === val.appid)) === index); // Remove duplicates
+      .filter((val, index, arr) => arr.findIndex(t => (t.appid === val.appid)) === index); // Remove duplicates
     console.log(this.mutualSteamGames);
   }
 
@@ -37,22 +36,25 @@ export class HomeComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustUrl('steam://rungameid/' + appID);
   }
 
-  public async getSteamFriends() {
-    let steamFriendsResp = await this.steamService.getSteamFriends(this.steamID);
-    this.steamFriends = steamFriendsResp[0].response?.players ?? [];
+  public getSteamFriends() {
+    this.steamService.getSteamFriends(this.steamID).subscribe(steamFriends => {
+      this.steamFriends = steamFriends[0].response?.players ?? [];
 
-    // Default all chechboxes to false
-    this.steamFriends.forEach(friend => {
-      friend.selected = false;
+      console.log(this.steamFriends);
+
+      // Default all checkboxes to false
+      this.steamFriends.forEach(friend => {
+        friend.selected = false;
+      });
+      // Add current user into the comparison
+      this.friendsSteamIDsToCompare.push(this.steamID);
+      // Grab games for current user
+      this.getSteamOwnedGames();
     });
-    // Add current user into the comparison
-    this.friendsSteamIDsToCompare.push(this.steamID);
-
-    console.log(this.steamFriends);
   }
 
   public addRemoveFromSteamComparison(checked: boolean, steamID: string) {
-    if(checked) {
+    if (checked) {
       this.friendsSteamIDsToCompare.push(steamID);
     }
     else {
@@ -62,19 +64,18 @@ export class HomeComponent implements OnInit {
     console.log(this.friendsSteamIDsToCompare);
   }
 
-  public async getSteamOwnedGames() {
+  public getSteamOwnedGames() {
     // For now, wipe vars and just redo the calls, caching TODO
     this.mutualSteamGameIDs = [];
     this.steamGames = [];
     this.mutualSteamGames = [];
     // Grab owned games for all steamIDs in comparison
-    let promises: Promise<any>[] = [];
+    let observables: Observable<any>[] = [];
     this.friendsSteamIDsToCompare.forEach(steamID => {
-      promises.push(this.steamService.getSteamOwnedGames(steamID))
+      observables.push(this.steamService.getSteamOwnedGames(steamID))
     })
-    Promise.all(promises)
-      .then(responses => {
-        responses.forEach(resp =>{
+    forkJoin(observables).subscribe(responses => {
+        responses.forEach(resp => {
           let steamGamesResp = resp.response?.games ?? [];
           let gameIDs: string[] = [];
           steamGamesResp.forEach((game: ISteamOwnedGames) => {
