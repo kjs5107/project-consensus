@@ -1,50 +1,81 @@
 {
-  "root": true,
-  "ignorePatterns": [
-    "projects/**/*"
-  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+    "es2017": true
+  },
   "overrides": [
     {
       "files": [
         "*.ts"
       ],
-      "parserOptions": {
-        "project": [
-          "tsconfig.json"
-        ],
-        "createDefaultProgram": true
-      },
       "extends": [
-        "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 10,
+        "project": [
+          "./tsconfig.serve.json",
+          "./src/tsconfig.app.json",
+          "./src/tsconfig.spec.json",
+          "./e2e/tsconfig.e2e.json"
+        ],
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "modules": true
+        }
+      },
+      "plugins": [
+        "@typescript-eslint",
+        "@angular-eslint/eslint-plugin"
       ],
       "rules": {
-        "@angular-eslint/directive-selector": [
+        "@typescript-eslint/indent": [
           "error",
+          2,
           {
-            "type": "attribute",
-            "prefix": "app",
-            "style": "camelCase"
+            "SwitchCase": 1,
+            "CallExpression": {
+              "arguments": "first"
+            },
+            "FunctionExpression": {
+              "parameters": "first"
+            },
+            "FunctionDeclaration": {
+              "parameters": "first"
+            }
           }
         ],
-        "@angular-eslint/component-selector": [
-          "error",
-          {
-            "type": "element",
-            "prefix": "app",
-            "style": "kebab-case"
-          }
-        ]
+        "@typescript-eslint/no-empty-function": 0,
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/no-var-requires": 0,
+        "@typescript-eslint/no-unsafe-call": 0,
+        "@typescript-eslint/no-unsafe-member-access": 0,
+        "@typescript-eslint/no-unsafe-assignment": 0,
+        "@typescript-eslint/no-unsafe-return": 0,
+        "@typescript-eslint/no-floating-promises": 0,
+        "@typescript-eslint/semi": "error",
+        "@angular-eslint/use-injectable-provided-in": "error",
+        "@angular-eslint/no-attribute-decorator": "error"
       }
     },
     {
       "files": [
-        "*.html"
+        "*.component.html"
       ],
-      "extends": [
-        "plugin:@angular-eslint/template/recommended"
+      "parser": "@angular-eslint/template-parser",
+      "plugins": [
+        "@angular-eslint/template"
       ],
-      "rules": {}
+      "rules": {
+        "@angular-eslint/template/banana-in-box": "error",
+        "@angular-eslint/template/no-negated-async": "error"
+      }
     }
   ]
 }
