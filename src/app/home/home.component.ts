@@ -8,11 +8,11 @@ import { ISteamOwnedGames } from '../shared/types/steam-games-interface';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
 
-  public steamID: string = '';
+  public steamID = '';
   public steamFriends: ISteamFriends[] = [];
   public steamGames: ISteamOwnedGames[] = []; // Flat array of all games for all selected friends
   public mutualSteamGames: ISteamOwnedGames[] = []; // Flat array of all games in common among selected friends
@@ -22,7 +22,7 @@ export class HomeComponent {
   constructor(private steamService: SteamService, private sanitizer: DomSanitizer) { }
 
   private getSteamGamesInCommon() {
-    let intersection = this.mutualSteamGameIDs.reduce((a, b) => a.filter(c => b.includes(c)));
+    const intersection = this.mutualSteamGameIDs.reduce((a, b) => a.filter(c => b.includes(c)));
     this.mutualSteamGames = this.steamGames.filter(game => intersection.includes(game.appid)) // Grab only the ids we care about
       .filter((val, index, arr) => arr.findIndex(t => (t.appid === val.appid)) === index); // Remove duplicates
     console.log(this.mutualSteamGames);
@@ -70,22 +70,21 @@ export class HomeComponent {
     this.steamGames = [];
     this.mutualSteamGames = [];
     // Grab owned games for all steamIDs in comparison
-    let observables: Observable<any>[] = [];
+    const observables: Observable<any>[] = [];
     this.friendsSteamIDsToCompare.forEach(steamID => {
-      observables.push(this.steamService.getSteamOwnedGames(steamID))
-    })
+      observables.push(this.steamService.getSteamOwnedGames(steamID));
+    });
     forkJoin(observables).subscribe(responses => {
-        responses.forEach(resp => {
-          let steamGamesResp = resp.response?.games ?? [];
-          let gameIDs: string[] = [];
-          steamGamesResp.forEach((game: ISteamOwnedGames) => {
-            gameIDs.push(game.appid);
-            this.steamGames.push(game);
-          });
-          this.mutualSteamGameIDs.push(gameIDs);
+      responses.forEach(resp => {
+        const steamGamesResp = resp.response?.games ?? [];
+        const gameIDs: string[] = [];
+        steamGamesResp.forEach((game: ISteamOwnedGames) => {
+          gameIDs.push(game.appid);
+          this.steamGames.push(game);
         });
-        this.getSteamGamesInCommon();
+        this.mutualSteamGameIDs.push(gameIDs);
       });
+      this.getSteamGamesInCommon();
+    });
   }
-
 }
