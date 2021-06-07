@@ -5,7 +5,7 @@
     <form (ngSubmit)="getSteamFriends()" class="steam-id-form">
       <label for="steamID">Please input your Steam ID:</label>
       <input type="text" name="steamID" id="steamID"[(ngModel)]="steamID" />
-      <button class="btn btn-primary steam-id-form-btn" type="submit">Submit</button>
+      <button mat-button color="accent" class="steam-id-form-btn" type="submit">Submit</button>
     </form>
   </div>
 
@@ -29,9 +29,10 @@
   <br>
   <div class="row">
     <h2>Games in Common: </h2>
+    <button *ngIf="mutualSteamGames.length > 0" mat-button color="accent" (click)="randomGame()">Select Random Game</button>
     <div *ngIf="mutualSteamGames.length > 0" class="friends-columns">
       <div *ngFor="let game of sortBy(mutualSteamGames, 'name')" class="form-check games-coulmn-padding">
-        <a [href]="getSteamLaunchGameUrl(game.appid)">{{game.name}}</a>
+        <a [ngClass]="{'highlight': game.appid === randomGameID}" [href]="getSteamLaunchGameUrl(game.appid)">{{game.name}}</a>
       </div>
     </div>
     <div *ngIf="mutualSteamGames.length == 0">

@@ -15,15 +15,17 @@ export class HomeComponent {
   public steamID = '';
   public steamFriends: ISteamFriends[] = [];
   public steamGames: ISteamOwnedGames[] = []; // Flat array of all games for all selected friends
+  public steamGameIDs: string[][] = []; // 2D array for manipulation of gameid intersections
+  public mutualSteamGameIDs: string[] = []; // Intersection of steam game ids in common
   public mutualSteamGames: ISteamOwnedGames[] = []; // Flat array of all games in common among selected friends
-  public mutualSteamGameIDs: string[][] = []; // 2D array for manipulation of gameid intersections
   public friendsSteamIDsToCompare: string[] = [];
+  public randomGameID: string = '';
 
   constructor(private steamService: SteamService, private sanitizer: DomSanitizer) { }
 
   private getSteamGamesInCommon() {
-    const intersection = this.mutualSteamGameIDs.reduce((a, b) => a.filter(c => b.includes(c)));
-    this.mutualSteamGames = this.steamGames.filter(game => intersection.includes(game.appid)) // Grab only the ids we care about
+    this.mutualSteamGameIDs = this.steamGameIDs.reduce((a, b) => a.filter(c => b.includes(c))); // Grab the intersection
+    this.mutualSteamGames = this.steamGames.filter(game => this.mutualSteamGameIDs.includes(game.appid)) // Grab only the ids we care about
       .filter((val, index, arr) => arr.findIndex(t => (t.appid === val.appid)) === index); // Remove duplicates
     console.log(this.mutualSteamGames);
   }
@@ -34,6 +36,10 @@ export class HomeComponent {
 
   public getSteamLaunchGameUrl(appID: string) {
     return this.sanitizer.bypassSecurityTrustUrl('steam://rungameid/' + appID);
+  }
+
+  public randomGame() {
+    this.randomGameID = this.mutualSteamGameIDs[Math.floor(Math.random() * this.mutualSteamGameIDs.length)];
   }
 
   public getSteamFriends() {
@@ -66,7 +72,7 @@ export class HomeComponent {
 
   public getSteamOwnedGames() {
     // For now, wipe vars and just redo the calls, caching TODO
-    this.mutualSteamGameIDs = [];
+    this.steamGameIDs = [];
     this.steamGames = [];
     this.mutualSteamGames = [];
     // Grab owned games for all steamIDs in comparison
@@ -82,7 +88,7 @@ export class HomeComponent {
           gameIDs.push(game.appid);
           this.steamGames.push(game);
         });
-        this.mutualSteamGameIDs.push(gameIDs);
+        this.steamGameIDs.push(gameIDs);
       });
       this.getSteamGamesInCommon();
     });
